@@ -3,70 +3,60 @@
 class Stage
 {
 	private $container;
-	private $parser;
-	private $router;
-
-	public function init(Outglow\Component\Community\Community $community)
-	{
-		// Set the community object up
-		$this->setContainer($community);
-
-		// Set the parser up ready for use
-		$this->setParser();
-
-		// Define our settings for use within the app
-		$this->applySettings();
-
-		var_dump(NAME);
-	}
+	private $controller;
+	private $action;
 
 	private function setContainer($newContainer)
 	{
-		return $this->container = $newContainer;
+		$this->container = $newContainer;
 	}
 
-	private function setParser()
+	public function init(Outglow\Component\Community\Community $container)
 	{
-		return $this->parser = $this->getContainer()->get('Yaml');
+		$this->setContainer($container);
+		$this->selfRoute();
+		$this->parseRoutes();
+		$this->callRoutes();
 	}
 
-	private function setRouter($newRouter)
+	private function callRoutes()
 	{
-		return $this->router = $newRouter;
-	}
-
-	private function getContainer()
-	{
-		return $this->container;
-	}
-
-	private function getParser()
-	{
-		return $this->parser;
-	}
-
-	private function getRouter()
-	{
-		return $this->router;
-	}
-
-	private function checkForArray($potential)
-	{
-		if (is_array($potential))
-		{
-			return json_encode($potential);
+		$class = 'Application\Controller_' . $this->controller;
+		if (class_exists($class)) {
+			if (method_exists($class, $this->action)) {
+				$object = new $class();
+				if (method_exists($object, 'init'))
+				{
+					$object->init($this->container);
+				}
+				$method = $this->action;
+				$object->$method();
+			} else {
+				throw new Exception('Action ' . $this->action . ' does not exist');
+			}
+		} else {
+			throw new Exception('Controller ' . $this->controller . ' does not exist');
 		}
-		return $potential;
 	}
 
-	private function applySettings()
+	private function parseRoutes()
 	{
-		$general = $this->getParser()->parse(file_get_contents(__DIR__ . '/../Config/General.yml'));
-		foreach ($general as $key => $value)
-		{
-			define($key, $this->checkForArray($value));
-		}
+		$routes = $this->container->get('REQUEST');
+		$this->controller = ucfirst($routes[0]);
+		$this->action 	  = $routes[1];
 		return true;
+	}
+
+	private function selfRoute()
+	{
+		$this->container->set('REQUEST', function() {
+			$request = $_SERVER['REQUEST_URI'];
+			if (strpos($request, '/index.php/') !== false)
+			{
+				$request = str_replace('/index.php/', '', $request);
+			}
+			return explode('/', $request);
+		});
 	}
 }
 

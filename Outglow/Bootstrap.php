@@ -2,60 +2,59 @@
 
 class Bootstrap
 {
-	private $loader    = NULL;
-	private $community = NULL;
+	private $container = NULL;
 
-	public function __construct(SplClassLoader $loader)
+	public function __construct()
 	{
-		$this->loader = $loader;
+		// Load in our container first
+		$this->setContainer($this->loadOutglowCommunity());
+
+		// Load in the rest of our dependencies
+		$this->loadOutglowHttpBase();
+		$this->loadSymfonyYaml();
+
+		$this->loadApplication();
+	}
+
+	private function loadApplication()
+	{
+		$loader = new Loader('Application', __DIR__ . '/../');
+		$loader->register();
+	}
+
+	private function setContainer($newContainer)
+	{
+		$this->container = $newContainer;
 	}
 
 	public function fire(Stage $stage)
 	{
-		$this->loadOutglowCommunity();
-		$this->injectOutglowHttpBase();
-		$this->injectSymfonyYaml();
-
-		$stage->init($this->community);
-
-		$this->setLoader(NULL);
-		$this->setCommunity(NULL);
+		$stage->init($this->container);
 	}
 
-	private function setLoader($newLoader)
+	private function loadOutglowCommunity()
 	{
-		return $this->loader = $newLoader;
+		$loader = new Loader('Outglow\Component\Community', __DIR__ . '/../');
+		$loader->register();
+		return new Outglow\Component\Community\Community();
 	}
 
-	private function setCommunity($newCommunity)
+	private function loadOutglowHttpBase()
 	{
-		return $this->community = $newCommunity;
-	}
-
-	public function loadOutglowCommunity()
-	{
-		$this->loader->setup('Outglow\Component\Community', __DIR__ . '/../');
-		$this->community = new \Outglow\Component\Community\Community();
-		return true;
-	}
-
-	public function injectOutglowHttpBase()
-	{
-		$this->community->set('HttpBase', function() {
-			$loader = new SplClassLoader();
-			$loader->setup('Outglow\Component\HttpBase', __DIR__ . '/../');
-			return new \Outglow\Component\HttpBase\HttpBase();
-		}, true);
-		return true;
-	}
-
-	public function injectSymfonyYaml()
-	{
-		$this->loader->setup('Symfony\Component\Yaml' , __DIR__ . '/../Bundles/');
-		$this->community->set('Yaml', function() {
-			return new \Symfony\Component\Yaml\Parser();
+		$loader = new Loader('Outglow\Component\HttpBase', __DIR__ . '/../');
+		$loader->register();
+		return $this->container->set('HttpBase', function() {
+			return new Outglow\Component\HttpBase\HttpBase();
 		});
-		return true;
+	}
+
+	private function loadSymfonyYaml()
+	{
+		$loader = new Loader('Symfony\Component\Yaml' , __DIR__ . '/../Bundles/');
+		$loader->register();
+		return $this->container->set('Yaml', function() {
+			return new Symfony\Component\Yaml\Parser();
+		});
 	}
 }
 	

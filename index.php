@@ -6,7 +6,7 @@
 	/**
 	 * CREATE THE BOOTSTRAP
 	 */
-	$bootstrap = new Bootstrap(new SplClassLoader());
+	$bootstrap = new Bootstrap();
 
 	/**
 	 * FIRE THE BOOTSTRAP UP!

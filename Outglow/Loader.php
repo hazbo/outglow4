@@ -8,8 +8,7 @@
  *
  *     // Example which loads classes for the Doctrine Common package in the
  *     // Doctrine\Common namespace.
- *     $classLoader = new SplClassLoader();
- *     $classLoader = $classLoader->setup('Doctrine\Common', '/path/to/doctrine');
+ *     $classLoader = new SplClassLoader('Doctrine\Common', '/path/to/doctrine');
  *     $classLoader->register();
  *
  * @author Jonathan H. Wage <jonwage@gmail.com>
@@ -17,9 +16,8 @@
  * @author Matthew Weier O'Phinney <matthew@zend.com>
  * @author Kris Wallsmith <kris.wallsmith@gmail.com>
  * @author Fabien Potencier <fabien.potencier@symfony-project.org>
- * @author Harry Lawrence <harry.lawrence@gmx.com>
  */
-class splClassLoader
+class Loader
 {
     private $_fileExtension = '.php';
     private $_namespace;
@@ -32,17 +30,10 @@ class splClassLoader
      *
      * @param string $ns The namespace to use.
      */
-    public function __construct()
+    public function __construct($ns = null, $includePath = null)
     {
-
-    }
-
-    public function setup($ns = null, $includePath = null)
-    {
-        $this->_namespace   = $ns;
+        $this->_namespace = $ns;
         $this->_includePath = $includePath;
-
-        $this->register();
     }
 
     /**

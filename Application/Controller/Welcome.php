@@ -4,12 +4,12 @@ class Controller_Welcome extends Foundation_Controller
 {
 	public function init($container)
 	{
-		$this->append('http', $container->get('HttpBase'));
+		$this->append('user', new Model_User());
 	}
 
-	public function test()
+	public function harry()
 	{
-		
+		echo $this->user->name;
 	}
 }
 

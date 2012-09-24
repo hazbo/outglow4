@@ -11,18 +11,7 @@ class Foundation_Controller
 
 	public function append($key, $value)
 	{
-		return $this->local[$key] = $value;
-	}
-
-	/**
-	 * - load
-	 * ALIAS METHOD FOR APPEND
-	 * @param String
-	 * @param Object
-	 */
-	public function load($key, $value)
-	{
-		return $this->append($key, $value);
+		return $this->local[strtolower($key)] = $value;
 	}
 
 	public function detach($key)
