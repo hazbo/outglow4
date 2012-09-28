@@ -20,6 +20,13 @@ class Foundation_Controller
 		return true;
 	}
 
+	public function needs($value)
+	{
+		if (isset($value)) {
+			
+		}
+	}
+
 	public function __get($key)
 	{
 		return $this->local[$key];

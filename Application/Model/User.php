@@ -1,12 +1,13 @@
 <?php namespace Application;
 
-class Model_User
+class Model_User extends Foundation_Model
 {
-	public $name = 'Harry';
-	
-	public function __construct()
-	{
+	private $table = 'user';
+	private $prime = 'id';
 
+	public function save($values)
+	{
+		
 	}
 }
 

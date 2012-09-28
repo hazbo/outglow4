@@ -8,11 +8,12 @@ class Controller_Welcome extends Foundation_Controller
 	{
 		$this->append('container', $container);
 		$this->append('routes', $routes);
+		$this->append('user', new Model_User($container));
 	}
 
 	public function main()
 	{
-		echo $this->routes[0];
+		$this->needs($this->routes);
 	}
 }
 
