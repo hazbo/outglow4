@@ -1,15 +1,18 @@
 <?php namespace Application;
 
+// Sample code!
+
 class Controller_Welcome extends Foundation_Controller
 {
-	public function init($container)
+	public function init($container, $routes)
 	{
-		$this->append('user', new Model_User());
+		$this->append('container', $container);
+		$this->append('routes', $routes);
 	}
 
-	public function harry()
+	public function main()
 	{
-		echo $this->user->name;
+		echo $this->routes[0];
 	}
 }
 

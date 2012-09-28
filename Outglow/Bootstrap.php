@@ -1,37 +1,88 @@
 <?php
 
+/**
+ * OUTGLOW 4 RELEASE FRAMEWORK
+ * 
+ * FEEL FREE TO USE / MODIFY ANY OF THIS
+ * CODE FOR YOUR OWN PROJECTS
+ * OPEN SOURCE / COMMERCIAL
+ *
+ * @author Harry Lawrence
+ * @copyright Outglow 2012
+ * @package Bootstrap
+ * @version 1.0
+ * @license The MIT License (MIT)
+*/
+
 class Bootstrap
 {
+	/**
+	 * THE INITIAL PROPERTY FOR
+	 * OUR CONTAINER
+	 * @var NULL
+	 */
 	private $container = NULL;
 
+	/**
+	 * - constructor
+	 * CALLS ALL METHODS WITHIN
+	 * THIS CLASS TO LOAD ALL
+	 * OTHER CLASSES
+	 * @return NULL
+	 */
 	public function __construct()
 	{
-		// Load in our container first
 		$this->setContainer($this->loadOutglowCommunity());
 
-		// Load in the rest of our dependencies
 		$this->loadOutglowHttpBase();
 		$this->loadSymfonyYaml();
 
 		$this->loadApplication();
 	}
 
+	/**
+	 * - loadApplication
+	 * REGISTERS THE APPLICATION
+	 * NAMESPACES
+	 * @return bool
+	 */
 	private function loadApplication()
 	{
 		$loader = new Loader('Application', __DIR__ . '/../');
 		$loader->register();
+		return true;
 	}
 
+	/**
+	 * - setContainer
+	 * SETS UP OUR CONTAINTER
+	 * PROPERTY FOR THIS CLASS
+	 * @param Object
+	 * @return bool
+	 */
 	private function setContainer($newContainer)
 	{
-		$this->container = $newContainer;
+		return $this->container = $newContainer;
 	}
 
-	public function fire(Stage $stage)
+	/**
+	 * - fire
+	 * FIRES OUR AUTOLOADER ROUTER
+	 * AFTER EVERYTHING ELSE
+	 * @param Object
+	 * @return bool
+	 */
+	public function fire(Autorouter $router)
 	{
-		$stage->init($this->container);
+		return $router->init($this->container);
 	}
 
+	/**
+	 * - loadOutglowCommunity
+	 * LOADS IN THE DEPENDENCY
+	 * INJECTION CONTAINER
+	 * @return Object
+	 */
 	private function loadOutglowCommunity()
 	{
 		$loader = new Loader('Outglow\Component\Community', __DIR__ . '/../');
@@ -39,6 +90,12 @@ class Bootstrap
 		return new Outglow\Component\Community\Community();
 	}
 
+	/**
+	 * - loadOutglowHttpBase
+	 * LOADS THE OUTGLOW
+	 * HTTP BASE COMPONENT
+	 * @return Object
+	 */
 	private function loadOutglowHttpBase()
 	{
 		$loader = new Loader('Outglow\Component\HttpBase', __DIR__ . '/../');
@@ -48,6 +105,12 @@ class Bootstrap
 		});
 	}
 
+	/**
+	 * - loadSymfonyYaml
+	 * LOADS THE SYMFONY YAML PARSER
+	 * COMPONENT
+	 * @return Object
+	 */
 	private function loadSymfonyYaml()
 	{
 		$loader = new Loader('Symfony\Component\Yaml' , __DIR__ . '/../Bundles/');
