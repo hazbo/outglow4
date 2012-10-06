@@ -76,14 +76,25 @@ class Autorouter
 	private function parseRoutes()
 	{
 		$routes = $this->container->get('REQUEST');
-		$this->controller = ucfirst($routes[0]);
-		$this->action 	  = $routes[1];
-		unset($routes[0]);
-		unset($routes[1]);
+		foreach ($routes as $key => $value)
+		{
+			if (empty($value)) {
+				unset($routes[$key]);
+			}
+		}
 		$routes = array_merge($routes);
-
-		$this->extra = ($routes);
-		return true;
+		if (isset($routes[0]) && isset($routes[1])) {
+			$routes = array_merge($routes);
+			$this->controller = ucfirst($routes[0]);
+			$this->action 	  = $routes[1];
+			unset($routes[0]);
+			unset($routes[1]);
+			$routes = array_merge($routes);
+			$this->extra = ($routes);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -116,8 +127,12 @@ class Autorouter
 	{
 		$this->setContainer($container);
 		$this->selfRoute();
-		$this->parseRoutes();
-		$this->callRoutes();
+		if ($this->parseRoutes()) {
+			$this->callRoutes();
+		} else {
+			echo 'Routes have not been found';
+			return false;
+		}
 	}
 }
 

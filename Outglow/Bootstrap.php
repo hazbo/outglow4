@@ -35,6 +35,9 @@ class Bootstrap
 		$this->setContainer($this->loadOutglowCommunity());
 
 		$this->loadOutglowHttpBase();
+		$this->loadOutglowSession();
+		$this->loadOutglowDatabase();
+		$this->loadOutglowFacebook();	
 		$this->loadSymfonyYaml();
 
 		$this->loadApplication();
@@ -102,6 +105,51 @@ class Bootstrap
 		$loader->register();
 		return $this->container->set('HttpBase', function() {
 			return new Outglow\Component\HttpBase\HttpBase();
+		});
+	}
+
+	/**
+	 * - loadOutglowSession
+	 * LOADS THE OUTGLOW
+	 * SESSION COMPONENT
+	 * @return Object
+	 */
+	private function loadOutglowSession()
+	{
+		$loader = new Loader('Outglow\Component\Session', __DIR__ . '/../');
+		$loader->register();
+		return $this->container->set('Session', function() {
+			return new Outglow\Component\Session\Session();
+		});
+	}
+
+	/**
+	 * - loadOutglowRedBean
+	 * LOADS THE OUTGLOW
+	 * REDBEAN COMPONENT
+	 * @return Object
+	 */
+	private function loadOutglowDatabase()
+	{
+		$loader = new Loader('Outglow\Component\RedBean', __DIR__ . '/../');
+		$loader->register();
+		return $this->container->set('Database', function() {
+			return new Outglow\Component\RedBean\Database();
+		});
+	}
+
+	/**
+	 * - loadOutglowFacebook
+	 * LOADS THE OUTGLOW
+	 * FACEBOOK COMPONENT
+	 * @return Object
+	 */
+	private function loadOutglowFacebook()
+	{
+		$loader = new Loader('Outglow\Component\Facebook', __DIR__ . '/../');
+		$loader->register();
+		return $this->container->set('Facebook', function() {
+			return new Outglow\Component\Facebook\Facebook();
 		});
 	}
 
