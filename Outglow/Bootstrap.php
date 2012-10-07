@@ -24,26 +24,6 @@ class Bootstrap
 	private $container = NULL;
 
 	/**
-	 * - constructor
-	 * CALLS ALL METHODS WITHIN
-	 * THIS CLASS TO LOAD ALL
-	 * OTHER CLASSES
-	 * @return NULL
-	 */
-	public function __construct()
-	{
-		$this->setContainer($this->loadOutglowCommunity());
-
-		$this->loadOutglowHttpBase();
-		$this->loadOutglowSession();
-		$this->loadOutglowDatabase();
-		$this->loadOutglowFacebook();	
-		$this->loadSymfonyYaml();
-
-		$this->loadApplication();
-	}
-
-	/**
 	 * - loadApplication
 	 * REGISTERS THE APPLICATION
 	 * NAMESPACES
@@ -66,18 +46,6 @@ class Bootstrap
 	private function setContainer($newContainer)
 	{
 		return $this->container = $newContainer;
-	}
-
-	/**
-	 * - fire
-	 * FIRES OUR AUTOLOADER ROUTER
-	 * AFTER EVERYTHING ELSE
-	 * @param Object
-	 * @return bool
-	 */
-	public function fire(Autorouter $router)
-	{
-		return $router->init($this->container);
 	}
 
 	/**
@@ -166,6 +134,39 @@ class Bootstrap
 		return $this->container->set('Yaml', function() {
 			return new Symfony\Component\Yaml\Parser();
 		});
+	}
+
+	/**
+	 * - constructor
+	 * CALLS ALL METHODS WITHIN
+	 * THIS CLASS TO LOAD ALL
+	 * OTHER CLASSES
+	 * @return NULL
+	 */
+	public function __construct()
+	{
+		$this->setContainer($this->loadOutglowCommunity());
+
+		$this->loadOutglowHttpBase();
+		$this->loadOutglowSession();
+		$this->loadOutglowDatabase();
+		$this->loadOutglowFacebook();	
+		$this->loadSymfonyYaml();
+
+		$this->loadApplication();
+	}
+
+	/**
+	 * - fire
+	 * FIRES OUR AUTOLOADER ROUTER
+	 * AFTER EVERYTHING ELSE
+	 * @param Object
+	 * @return bool
+	 */
+	public function fire(Configure $configure, Autorouter $router)
+	{
+		$configure->init($this->container);
+		$router->init($this->container);
 	}
 }
 	

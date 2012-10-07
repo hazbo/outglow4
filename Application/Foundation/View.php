@@ -9,14 +9,20 @@
  *
  * @author Harry Lawrence
  * @copyright Outglow 2012
- * @package Foundation Model
+ * @package Foundation View
  * @version 1.0
  * @license The MIT License (MIT)
 */
 
-class Foundation_Model extends Foundation_Base_Core
+class Foundation_View extends Foundation_Base_Core
 {
-	
+	public function render($path, $vars = array())
+	{
+		foreach($vars as $key => $value) {
+			$$key = $value;
+		}
+		require(__DIR__ . '/../../Public/Views/' . $path);
+	}
 }
 
 ?>

@@ -3,6 +3,7 @@
 	require_once('Outglow/Loader.php');
 	require_once('Outglow/Autorouter.php');
 	require_once('Outglow/Bootstrap.php');
+	require_once('Outglow/Configure.php');
 
 	/**
 	 * CREATE THE BOOTSTRAP
@@ -13,5 +14,5 @@
 	 * FIRE THE BOOTSTRAP AND
 	 * PASS IN THE AUTOROUTER
 	 */
-	$bootstrap->fire(new Autorouter());
+	$bootstrap->fire(new Configure(), new Autorouter());
 ?>

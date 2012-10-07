@@ -2,12 +2,9 @@
 
 class Model_User extends Foundation_Model
 {
-	private $table = 'user';
-	private $prime = 'id';
-
-	public function save($values)
+	public function createOrLogin()
 	{
-		
+		// Create user or log them in!
 	}
 }
 

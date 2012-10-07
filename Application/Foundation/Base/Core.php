@@ -9,12 +9,12 @@
  *
  * @author Harry Lawrence
  * @copyright Outglow 2012
- * @package Autorouter
+ * @package Core
  * @version 1.0
  * @license The MIT License (MIT)
 */
 
-class Foundation_Core
+class Foundation_Base_Core
 {
 
 }

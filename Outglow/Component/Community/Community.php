@@ -25,6 +25,7 @@ class Community implements CommunityInterface
 	*/
 	private $container;
 	private $hiddenContainer;
+	private $params;
 
 	/**
 	 * - unsetHiddenContainerKey
@@ -123,10 +124,11 @@ class Community implements CommunityInterface
 	 * @param Function
 	 * @return bool
 	*/
-	public function set($key, $return, $newInstance = false)
+	public function set($key, $return, $params = NULL, $newInstance = false)
 	{
 		if ($this->handleNewInstanceOfClosure($return, $key) === true) {
 			$this->checkForNewInstance($newInstance, $key);
+			$this->params[$key] = $params;
 			return $this->container[$key] = $return;
 		}
 	}
@@ -142,7 +144,7 @@ class Community implements CommunityInterface
 	public function get($key)
 	{
 		if ((isset($this->container[$key]) && !isset($this->hiddenContainer[$key])) || isset($this->container[$key . '_true'])) {
-			$this->hiddenContainer[$key] = $this->container[$key]();
+			$this->hiddenContainer[$key] = $this->container[$key]($this->params[$key]);
 			if (!isset($this->container[$key . '_true'])) {
 				$this->unsetContainerKey($key);
 			}
