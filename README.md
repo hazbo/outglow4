@@ -9,7 +9,7 @@ for a good stable framework, I'd highly recommend NOT using this one, YET. Thank
 ##Tests
 So far, this has been tested with the following setups:
 
-	- Ubuntu 12.04 LTS (precise)
+  - Ubuntu 12.04 LTS (precise)
 	- Apache2 (with or without .HTACCESS)
 	- Nginx (current version)
 	- PHP 5.3*
