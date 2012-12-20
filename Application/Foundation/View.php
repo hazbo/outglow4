@@ -16,12 +16,32 @@
 
 class Foundation_View extends Foundation_Base_Core
 {
-	public function render($path, $vars = array())
+	private $fileContents;
+
+	public function select($path, $vars = array())
 	{
 		foreach($vars as $key => $value) {
 			$$key = $value;
 		}
-		require(__DIR__ . '/../../Public/Views/' . $path);
+		$this->fileContents = file_get_contents(__DIR__ . '/../../Public/Views/' . $path);
+	}
+
+	public function createPlaceholder($key, $value)
+	{
+		return $this->fileContents = preg_replace('#\{{' . $key . '\}}#s', $value, $this->fileContents);
+	}
+
+	public function createPlaceholders($keysAndValues = array())
+	{
+		foreach ($keysAndValues as $key => $value) {
+			$this->createPlaceHolder($key, $value);
+		}
+		return true;
+	}
+
+	public function draw()
+	{
+		print $this->fileContents;
 	}
 }
 

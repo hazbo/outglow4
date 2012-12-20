@@ -123,14 +123,25 @@ class Autorouter
 	 * @param Object
 	 * @return NULL
 	 */
-	public function init(Outglow\Component\Community\Community $container)
+	public function init(Outglow\Component\Fluf\Fluf $container)
 	{
 		$this->setContainer($container);
 		$this->selfRoute();
 		if ($this->parseRoutes()) {
 			$this->callRoutes();
 		} else {
-			echo 'Routes have not been found';
+			$defaultRoutesFromApplicationConfig = $container->get('Config');
+			if (isset($defaultRoutesFromApplicationConfig['general']['default_controller_route'])) {
+				$this->controller = $defaultRoutesFromApplicationConfig['general']['default_controller_route'];
+				if (isset($defaultRoutesFromApplicationConfig['general']['default_action_route'])) {
+					$this->action = $defaultRoutesFromApplicationConfig['general']['default_action_route'];
+					$this->callRoutes();
+				} else {
+					throw new \Exception('No action found');
+				}
+			} else {
+				throw new \Exception('No controller found');
+			}
 			return false;
 		}
 	}

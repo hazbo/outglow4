@@ -16,7 +16,51 @@
 
 class Foundation_Base_Core
 {
+	/**
+	 * CREATE THE LOCAL BASE
+	 * PROPERTY
+	 * @var Array
+	 */
+	private $local = array();
 
+	/**
+	 * - append
+	 * APPEND VALUES TO A LOCAL
+	 * CONTROLLER PROPERTY
+	 * @param String
+	 * @param String
+	 * @return bool
+	 */
+	public function append($key, $value)
+	{
+		return $this->local[strtolower($key)] = $value;
+	}
+
+	/**
+	 * - detach
+	 * UNSET VALUES FROM THE
+	 * LOCAL PROPERTY
+	 * @param String
+	 * @return bool
+	 */
+	public function detach($key)
+	{
+		unset($this->local[$key]);
+		return true;
+	}
+
+	/**
+	 * - __get
+	 * MAGIC METHOD TO RETURN
+	 * VALUES FROM THE LOCAL
+	 * PROPERTY
+	 * @param String
+	 * @return Object
+	 */
+	public function __get($key)
+	{
+		return $this->local[$key];
+	}
 }
 
 ?>

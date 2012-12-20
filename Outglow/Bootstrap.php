@@ -20,8 +20,10 @@ class Bootstrap
 	 * THE INITIAL PROPERTY FOR
 	 * OUR CONTAINER
 	 * @var NULL
+	 * @var NULL
 	 */
-	private $container = NULL;
+	private $container 	   = NULL;
+	private $softContainer = NULL;
 
 	/**
 	 * - loadApplication
@@ -49,6 +51,19 @@ class Bootstrap
 	}
 
 	/**
+	 * - setSoftContainer
+	 * SETS UP OUR CONTAINTER
+	 * PROPERTY FOR THIS INTERNAL
+	 * SETTINGS
+	 * @param Object
+	 * @return bool
+	 */
+	private function setSoftContainer($newSoftContainer)
+	{
+		return $this->softContainer = $newSoftContainer;
+	}
+
+	/**
 	 * - loadOutglowCommunity
 	 * LOADS IN THE DEPENDENCY
 	 * INJECTION CONTAINER
@@ -59,6 +74,20 @@ class Bootstrap
 		$loader = new Loader('Outglow\Component\Community', __DIR__ . '/../');
 		$loader->register();
 		return new Outglow\Component\Community\Community();
+	}
+
+	/**
+	 * - loadOutglowFluf
+	 * LOADS IN THE WRAPPER FOR
+	 * COMMUNITY FOR EXTRA
+	 * CONFIGURATION
+	 * @return Object
+	 */
+	private function loadOutglowFluf(\Outglow\Component\Community\Community $community, $symfonyYamlParser)
+	{
+		$loader = new Loader('Outglow\Component\Fluf', __DIR__ . '/../');
+		$loader->register();
+		return new Outglow\Component\Fluf\Fluf($community, $symfonyYamlParser);
 	}
 
 	/**
@@ -116,8 +145,14 @@ class Bootstrap
 	{
 		$loader = new Loader('Outglow\Component\Facebook', __DIR__ . '/../');
 		$loader->register();
-		return $this->container->set('Facebook', function() {
-			return new Outglow\Component\Facebook\Facebook();
+		return $this->container->prepare(function() {
+			return array(
+				'key'  => 'Facebook',
+				'data' => function() {
+					return new Outglow\Component\Facebook\Facebook();
+				},
+				'configuration' => 'Config/Facebook.yml'
+			);
 		});
 	}
 
@@ -133,7 +168,36 @@ class Bootstrap
 		$loader->register();
 		return $this->container->set('Yaml', function() {
 			return new Symfony\Component\Yaml\Parser();
+		}, true);
+	}
+
+	/**
+	 * - loadFuelValidation
+	 * LOADS THE FUEL VALIDATION LIBRARY
+	 * @return Object
+	 */
+	private function loadFuelValidation()
+	{
+		$loader = new Loader('Fuel\Validation' , __DIR__ . '/../Bundles/');
+		$loader->register();
+		return $this->container->set('Validation', function() {
+			return new Fuel\Validation\Base();
 		});
+	}
+
+	/**
+	 * - loadSoftContainerYamlComponent
+	 * LOADS THE SYMFONY YAML COMPONENT
+	 * FOR FLUF
+	 * @return Object
+	 */
+	private function loadSoftContainerYamlComponent()
+	{
+		$loader = new Loader('Symfony\Component\Yaml' , __DIR__ . '/../Bundles/');
+		$loader->register();
+		return $this->softContainer->set('Yaml', function() {
+			return new Symfony\Component\Yaml\Parser();
+		}, true);
 	}
 
 	/**
@@ -145,14 +209,36 @@ class Bootstrap
 	 */
 	public function __construct()
 	{
-		$this->setContainer($this->loadOutglowCommunity());
+		/**
+		 * LOADS IN THINGS NEEDED INTERNALLY
+		 */
+		$this->setSoftContainer($this->loadOutglowCommunity());
+		$this->loadSoftContainerYamlComponent();
 
+		/**
+		 * SETS THE CONTAINER USING FLUF
+		 */
+		$this->setContainer($this->loadOutglowFluf($this->loadOutglowCommunity(), $this->softContainer->get('Yaml')));
+
+		/**
+		 * LOADS IN ALL INTERNAL COMPONENTS
+		 */
 		$this->loadOutglowHttpBase();
 		$this->loadOutglowSession();
 		$this->loadOutglowDatabase();
-		$this->loadOutglowFacebook();	
-		$this->loadSymfonyYaml();
+		$this->loadOutglowFacebook();
 
+		/**
+		 * LOADS IN ALL EXTERNAL COMPONENTS
+		 */
+		$this->loadSymfonyYaml();
+		$this->loadFuelValidation();
+
+		/**
+		 * UNSETS SOFT COMPONENTS AND RUNS
+		 * THE APPLICATION
+		 */
+		$this->setSoftContainer(NULL);
 		$this->loadApplication();
 	}
 

@@ -1,0 +1,3 @@
+app_id: 501575446543839
+secret: 412b968b124b1ecfa1e96f7502d301eb
+redirect_uri: http://127.0.0.1:4567/welcome/authenticate/

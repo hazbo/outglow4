@@ -11,12 +11,20 @@
  * @author Harry Lawrence
  * @copyright Outglow Components 2012
  * @package Community
- * @version 1.0
+ * @version 1.1.4
  * @license The MIT License (MIT)
 */
 
 class Community implements CommunityInterface
 {
+	/**
+	 * ALLOWS YOU TO USE FOR CREATING
+	 * EACH OBJECT FOR A SINGLE
+	 * INSTANCE
+	 * @var bool
+	 */
+	const SINGLE_INSTANCE = false;
+
 	/**
 	 * CREATE TWO PROPERTIES TO STORE
 	 * THE DEPENDENCIES
@@ -124,7 +132,7 @@ class Community implements CommunityInterface
 	 * @param Function
 	 * @return bool
 	*/
-	public function set($key, $return, $params = NULL, $newInstance = false)
+	public function set($key, $return, $params = NULL, $newInstance = self::SINGLE_INSTANCE)
 	{
 		if ($this->handleNewInstanceOfClosure($return, $key) === true) {
 			$this->checkForNewInstance($newInstance, $key);

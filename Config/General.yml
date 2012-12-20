@@ -1,2 +1,2 @@
-NAME: Harry
-AGE: 20
+default_controller_route: welcome
+default_action_route: home
