@@ -185,6 +185,24 @@ class Bootstrap
 		});
 	}
 
+	private function loadMemcache()
+	{
+		if (class_exists('Memcache')) {
+			$loader = new Loader('Outglow\Component\Memcache', __DIR__ . '/../');
+			$loader->register();
+			return $this->container->prepare(function() {
+				return array(
+					'key'  => 'Memcache',
+					'data' => function() {
+						return new Outglow\Component\Memcache\Memcache(new \Memcache());
+					},
+					'configuration' => 'Config/Memcache.yml'
+				);
+			});
+		}
+		return false;
+	}
+
 	/**
 	 * - loadSoftContainerYamlComponent
 	 * LOADS THE SYMFONY YAML COMPONENT
@@ -233,6 +251,7 @@ class Bootstrap
 		 */
 		$this->loadSymfonyYaml();
 		$this->loadFuelValidation();
+		$this->loadMemcache();
 
 		/**
 		 * UNSETS SOFT COMPONENTS AND RUNS
