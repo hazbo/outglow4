@@ -1,4 +1,4 @@
-<?php namespace Outglow\Component;
+<?php namespace Outglow\Component\Memcache;
 
 class Memcache
 {
@@ -34,7 +34,7 @@ class Memcache
 
 	public function setPort($newPort)
 	{
-		return $this->post = $newPort;
+		return $this->port = $newPort;
 	}
 
 	public function getHost()
