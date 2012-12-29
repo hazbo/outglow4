@@ -1,2 +1,9 @@
+### FRAMEWORK SETTINGS
 default_controller_route: welcome
 default_action_route: home
+
+### MEMCACHE SETTINGS
+host: '127.0.0.1'
+port: 11211
+
+check_connect: true

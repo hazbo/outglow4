@@ -14,6 +14,9 @@
  * @license The MIT License (MIT)
 */
 
+use Outglow\Component\Fluf\Fluf;
+use Symfony\Component\Yaml\Parser;
+
 class Configure
 {
 	/**
@@ -41,10 +44,9 @@ class Configure
 	 * SETTINGS FROM CONFIG FILE
 	 * @return array
 	 */
-	private function loadConfigGeneral()
+	private function loadConfigGeneral(Parser $yamlParser)
 	{
-		$parser = $this->container->get('Yaml');
-		return $parser->parse($this->getConfigContents('General'));
+		return $yamlParser->parse($this->getConfigContents('General'));
 	}
 
 	/**
@@ -54,16 +56,16 @@ class Configure
 	 * @param Object
 	 * @return bool
 	 */
-	public function init(Outglow\Component\Fluf\Fluf $container)
+	public function init(Fluf $container, Parser $yamlParser)
 	{
 		$this->container = $container;
 		$options = array (
-			'general' => $this->loadConfigGeneral(),
+			'general' => $this->loadConfigGeneral($yamlParser),
 		);
 		$this->container->set('Config', function($options) {
 			return $options;
 		}, $options, true);
-		return true;
+		return $this->container->get('Config');
 	}
 }
 

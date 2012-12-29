@@ -18,7 +18,8 @@
 */
 
 use Outglow\Component\Community\Community;
-use Symfony\Component\Yaml;
+use Outglow\Component\Memcache\Memcache;
+use Symfony\Component\Yaml\Parser;
 
 class Fluf implements \Outglow\Component\Community\CommunityInterface
 {
@@ -36,11 +37,17 @@ class Fluf implements \Outglow\Component\Community\CommunityInterface
 	*/
 	private $community;
 	private $yamlParser;
+	private $memcache = NULL;
 	private $key;
 	private $data;
 	private $configuration;
 	private $referenceArray;
 	private $referenceMethods;
+
+	private function parseToRootConfigurationFile($configurationFilePath)
+	{
+		return md5(end(explode('/', $configurationFilePath)));
+	}
 
 	/**
 	 * - processReferenceArray
@@ -53,6 +60,7 @@ class Fluf implements \Outglow\Component\Community\CommunityInterface
 	{
 		$configurationFile = $this->referenceArray[$this->key]['configuration'];
 		if (file_exists($configurationFile)) {
+
 			$configurationData = $this->yamlParser->parse(file_get_contents($configurationFile));
 
 			if (!is_null($configurationData)) {
@@ -76,7 +84,7 @@ class Fluf implements \Outglow\Component\Community\CommunityInterface
 	 * @param bool
 	 * @return String
 	*/
-	function convertToCamelCase($string, $firstCharacterCaps = false)
+	private function convertToCamelCase($string, $firstCharacterCaps = false)
 	{
 		if($firstCharacterCaps) {
 			$string[0] = strtoupper($string[0]);
@@ -92,16 +100,15 @@ class Fluf implements \Outglow\Component\Community\CommunityInterface
 	 * @param Object
 	 * @return NULL
 	*/
-	public function __construct(Community $community, $yamlParser = NULL)
+	public function __construct(Community $community, Parser $yamlParser, Memcache $memcache = NULL)
 	{
 		$this->community 	 = $community;
 		$this->key 			 = NULL;
 		$this->data 		 = NULL;
 		$this->configuration = NULL;
 
-		if (!is_null($yamlParser)) {
-			$this->yamlParser = $yamlParser;
-		}
+		$this->yamlParser = $yamlParser;
+		$this->memcache   = $memcache;
 	}
 
 	/**

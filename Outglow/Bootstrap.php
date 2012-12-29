@@ -1,18 +1,12 @@
 <?php
 
-/**
- * OUTGLOW 4 RELEASE FRAMEWORK
- * 
- * FEEL FREE TO USE / MODIFY ANY OF THIS
- * CODE FOR YOUR OWN PROJECTS
- * OPEN SOURCE / COMMERCIAL
- *
- * @author Harry Lawrence
- * @copyright Outglow 2012
- * @package Bootstrap
- * @version 1.0
- * @license The MIT License (MIT)
-*/
+use Outglow\Component\Community\Community;
+use Outglow\Component\Fluf\Fluf;
+use Outglow\Component\Memcache\Memcache;
+use Outglow\Component\HttpBase\HttpBase;
+use Outglow\Component\Facebook\Facebook;
+use Symfony\Component\Yaml\Parser;
+use Fuel\Validation\Base;
 
 class Bootstrap
 {
@@ -20,202 +14,99 @@ class Bootstrap
 	 * THE INITIAL PROPERTY FOR
 	 * OUR CONTAINER
 	 * @var NULL
-	 * @var NULL
 	 */
-	private $container 	   = NULL;
-	private $softContainer = NULL;
+	private $community = NULL;
 
 	/**
-	 * - loadApplication
-	 * REGISTERS THE APPLICATION
-	 * NAMESPACES
-	 * @return bool
-	 */
-	private function loadApplication()
-	{
-		$loader = new Loader('Application', __DIR__ . '/../');
-		$loader->register();
-		return true;
-	}
-
-	/**
-	 * - setContainer
-	 * SETS UP OUR CONTAINTER
-	 * PROPERTY FOR THIS CLASS
-	 * @param Object
-	 * @return bool
-	 */
-	private function setContainer($newContainer)
-	{
-		return $this->container = $newContainer;
-	}
-
-	/**
-	 * - setSoftContainer
-	 * SETS UP OUR CONTAINTER
-	 * PROPERTY FOR THIS INTERNAL
-	 * SETTINGS
-	 * @param Object
-	 * @return bool
-	 */
-	private function setSoftContainer($newSoftContainer)
-	{
-		return $this->softContainer = $newSoftContainer;
-	}
-
-	/**
-	 * - loadOutglowCommunity
+	 * - setupOutglowCommunity
 	 * LOADS IN THE DEPENDENCY
 	 * INJECTION CONTAINER
 	 * @return Object
 	 */
-	private function loadOutglowCommunity()
+	private function setupOutglowCommunity()
 	{
-		$loader = new Loader('Outglow\Component\Community', __DIR__ . '/../');
-		$loader->register();
-		return new Outglow\Component\Community\Community();
+		return $this->community = new Fluf(new Community(), new Parser());
 	}
 
 	/**
-	 * - loadOutglowFluf
-	 * LOADS IN THE WRAPPER FOR
-	 * COMMUNITY FOR EXTRA
-	 * CONFIGURATION
-	 * @return Object
-	 */
-	private function loadOutglowFluf(\Outglow\Component\Community\Community $community, $symfonyYamlParser)
-	{
-		$loader = new Loader('Outglow\Component\Fluf', __DIR__ . '/../');
-		$loader->register();
-		return new Outglow\Component\Fluf\Fluf($community, $symfonyYamlParser);
-	}
-
-	/**
-	 * - loadOutglowHttpBase
+	 * - setupOutglowConfiguration
 	 * LOADS THE OUTGLOW
-	 * HTTP BASE COMPONENT
+	 * CONFIGURATION DATA
 	 * @return Object
 	 */
-	private function loadOutglowHttpBase()
+	private function setupOutglowConfiguration(Configure $configure)
 	{
-		$loader = new Loader('Outglow\Component\HttpBase', __DIR__ . '/../');
-		$loader->register();
-		return $this->container->set('HttpBase', function() {
-			return new Outglow\Component\HttpBase\HttpBase();
-		});
+		return $configure->init($this->community, new Parser());
 	}
 
 	/**
-	 * - loadOutglowSession
+	 * - setupOutglowMemcache
 	 * LOADS THE OUTGLOW
-	 * SESSION COMPONENT
+	 * MEMCACHE COMPONENT
 	 * @return Object
 	 */
-	private function loadOutglowSession()
+	private function setupOutglowMemcache()
 	{
-		$loader = new Loader('Outglow\Component\Session', __DIR__ . '/../');
-		$loader->register();
-		return $this->container->set('Session', function() {
-			return new Outglow\Component\Session\Session();
-		});
-	}
-
-	/**
-	 * - loadOutglowRedBean
-	 * LOADS THE OUTGLOW
-	 * REDBEAN COMPONENT
-	 * @return Object
-	 */
-	private function loadOutglowDatabase()
-	{
-		$loader = new Loader('Outglow\Component\RedBean', __DIR__ . '/../');
-		$loader->register();
-		return $this->container->set('Database', function() {
-			return new Outglow\Component\RedBean\Database();
-		});
-	}
-
-	/**
-	 * - loadOutglowFacebook
-	 * LOADS THE OUTGLOW
-	 * FACEBOOK COMPONENT
-	 * @return Object
-	 */
-	private function loadOutglowFacebook()
-	{
-		$loader = new Loader('Outglow\Component\Facebook', __DIR__ . '/../');
-		$loader->register();
-		return $this->container->prepare(function() {
+		return $this->community->prepare(function() {
 			return array(
-				'key'  => 'Facebook',
+				'key'  => 'Memcache',
 				'data' => function() {
-					return new Outglow\Component\Facebook\Facebook();
+					return new Memcache(new \Memcache());
 				},
-				'configuration' => 'Config/Facebook.yml'
+				'configuration' => __DIR__ . '/../Config/General.yml'
 			);
 		});
 	}
 
 	/**
-	 * - loadSymfonyYaml
+	 * - setupOutglowHttpBase
+	 * LOADS THE OUTGLOW
+	 * HTTP BASE COMPONENT
+	 * @return Object
+	 */
+	private function setupOutglowHttpBase()
+	{
+		return $this->community->set('Http', function() {
+			return new HttpBase();
+		});
+	}
+
+	/**
+	 * - setupOutglowFacebook
+	 * LOADS THE OUTGLOW
+	 * FACEBOOK COMPONENT
+	 * @return Object
+	 */
+	private function setupOutglowFacebook()
+	{
+		return $this->community->set('Facebook', function() {
+			return new Facebook();
+		});
+	}
+
+	/**
+	 * - setupSymfonyYaml
 	 * LOADS THE SYMFONY YAML PARSER
 	 * COMPONENT
 	 * @return Object
 	 */
-	private function loadSymfonyYaml()
+	private function setupSymfonyYaml()
 	{
-		$loader = new Loader('Symfony\Component\Yaml' , __DIR__ . '/../Bundles/');
-		$loader->register();
-		return $this->container->set('Yaml', function() {
-			return new Symfony\Component\Yaml\Parser();
-		}, true);
-	}
-
-	/**
-	 * - loadFuelValidation
-	 * LOADS THE FUEL VALIDATION LIBRARY
-	 * @return Object
-	 */
-	private function loadFuelValidation()
-	{
-		$loader = new Loader('Fuel\Validation' , __DIR__ . '/../Bundles/');
-		$loader->register();
-		return $this->container->set('Validation', function() {
-			return new Fuel\Validation\Base();
+		return $this->community->set('Yaml', function() {
+			return new Parser();
 		});
 	}
 
-	private function loadMemcache()
-	{
-		if (class_exists('Memcache')) {
-			$loader = new Loader('Outglow\Component\Memcache', __DIR__ . '/../');
-			$loader->register();
-			return $this->container->prepare(function() {
-				return array(
-					'key'  => 'Memcache',
-					'data' => function() {
-						return new Outglow\Component\Memcache\Memcache(new \Memcache());
-					},
-					'configuration' => 'Config/Memcache.yml'
-				);
-			});
-		}
-		return false;
-	}
-
 	/**
-	 * - loadSoftContainerYamlComponent
-	 * LOADS THE SYMFONY YAML COMPONENT
-	 * FOR FLUF
+	 * - setupFuelValidation
+	 * LOADS THE FUEL VALIDATION LIBRARY
 	 * @return Object
 	 */
-	private function loadSoftContainerYamlComponent()
+	private function setupFuelValidation()
 	{
-		$loader = new Loader('Symfony\Component\Yaml' , __DIR__ . '/../Bundles/');
-		$loader->register();
-		return $this->softContainer->set('Yaml', function() {
-			return new Symfony\Component\Yaml\Parser();
-		}, true);
+		return $this->community->set('Validation', function() {
+			return new Base();
+		});
 	}
 
 	/**
@@ -223,42 +114,43 @@ class Bootstrap
 	 * CALLS ALL METHODS WITHIN
 	 * THIS CLASS TO LOAD ALL
 	 * OTHER CLASSES
+	 * @param Object
 	 * @return NULL
 	 */
-	public function __construct()
+	public function __construct(Configure $configure)
 	{
-		/**
-		 * LOADS IN THINGS NEEDED INTERNALLY
-		 */
-		$this->setSoftContainer($this->loadOutglowCommunity());
-		$this->loadSoftContainerYamlComponent();
+		$namespaces = array(
+			'Outglow\Component\Community' => __DIR__ . '/../',
+			'Outglow\Component\Fluf' 	  => __DIR__ . '/../',
+			'Outglow\Component\Memcache'  => __DIR__ . '/../',
+			'Outglow\Component\HttpBase'  => __DIR__ . '/../',
+			'Outglow\Component\Facebook'  => __DIR__ . '/../',
+			'Symfony\Component\Yaml' 	  => __DIR__ . '/../Bundles/',
+			'Application' 				  => __DIR__ . '/../'
+		);
 
-		/**
-		 * SETS THE CONTAINER USING FLUF
-		 */
-		$this->setContainer($this->loadOutglowFluf($this->loadOutglowCommunity(), $this->softContainer->get('Yaml')));
+		foreach ($namespaces as $namespace => $path) {
+			$loader = new Loader($namespace, $path);
+			$loader->register();
+		}
 
-		/**
-		 * LOADS IN ALL INTERNAL COMPONENTS
-		 */
-		$this->loadOutglowHttpBase();
-		$this->loadOutglowSession();
-		$this->loadOutglowDatabase();
-		$this->loadOutglowFacebook();
+		$this->setupOutglowCommunity();
+		$this->setupOutglowConfiguration($configure);
+		$this->setupOutglowMemcache();
+		$this->setupOutglowHttpBase();
+		$this->setupOutglowFacebook();
+		$this->setupSymfonyYaml();
+		$this->setupFuelValidation();
+	}
 
-		/**
-		 * LOADS IN ALL EXTERNAL COMPONENTS
-		 */
-		$this->loadSymfonyYaml();
-		$this->loadFuelValidation();
-		$this->loadMemcache();
-
-		/**
-		 * UNSETS SOFT COMPONENTS AND RUNS
-		 * THE APPLICATION
-		 */
-		$this->setSoftContainer(NULL);
-		$this->loadApplication();
+	/**
+	 * - getContainer
+	 * RETURNS THE COMMUNITY OBJECT
+	 * @return Object
+	 */
+	public function getContainer()
+	{
+		return $this->community;
 	}
 
 	/**
@@ -268,11 +160,10 @@ class Bootstrap
 	 * @param Object
 	 * @return bool
 	 */
-	public function fire(Configure $configure, Autorouter $router)
+	public function fire(Autorouter $router)
 	{
-		$configure->init($this->container);
-		$router->init($this->container);
+		$router->init($this->community);
 	}
 }
-	
+
 ?>

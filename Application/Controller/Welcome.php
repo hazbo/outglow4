@@ -12,7 +12,7 @@ class Controller_Welcome extends Foundation_Controller
 
 	public function home()
 	{
-		var_dump($this->container->get('Memcache'));
+		die('dd');
 	}
 }
 
