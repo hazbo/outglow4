@@ -12,7 +12,8 @@ class Controller_Welcome extends Foundation_Controller
 
 	public function home()
 	{
-		die('dd');
+		$jade = $this->container->get('Jade');
+		echo $jade->render('Layouts/Welcome.jade');
 	}
 }
 
