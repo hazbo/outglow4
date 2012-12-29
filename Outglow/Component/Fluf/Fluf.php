@@ -13,7 +13,7 @@
  * @author Harry Lawrence
  * @copyright Outglow Components 2012
  * @package Fluf
- * @version 1.1 BETA
+ * @version 1.1 BETA w/ Memcache
  * @license The MIT License (MIT)
 */
 

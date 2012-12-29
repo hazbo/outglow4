@@ -1,10 +1,11 @@
 <?php
 
 use Outglow\Component\Community\Community;
-use Outglow\Component\Fluf\Fluf;
 use Outglow\Component\Memcache\Memcache;
+use Outglow\Component\Fluf\Fluf;
 use Outglow\Component\HttpBase\HttpBase;
 use Outglow\Component\Facebook\Facebook;
+use Everzet\Jade;
 use Symfony\Component\Yaml\Parser;
 use Fuel\Validation\Base;
 
@@ -89,6 +90,19 @@ class Bootstrap
 		});
 	}
 
+	private function setupEverzetJade()
+	{
+		return $this->community->prepare(function() {
+			return array(
+				'key'  => 'Jade',
+				'data' => function() {
+					return new Jade\Engine();
+				},
+				'configuration' => __DIR__ . '/../Config/General.yml'
+			);
+		});
+	}
+
 	/**
 	 * - setupSymfonyYaml
 	 * LOADS THE SYMFONY YAML PARSER
@@ -126,10 +140,11 @@ class Bootstrap
 	{
 		$namespaces = array(
 			'Outglow\Component\Community' => __DIR__ . '/../',
-			'Outglow\Component\Fluf' 	  => __DIR__ . '/../',
 			'Outglow\Component\Memcache'  => __DIR__ . '/../',
+			'Outglow\Component\Fluf' 	  => __DIR__ . '/../',
 			'Outglow\Component\HttpBase'  => __DIR__ . '/../',
 			'Outglow\Component\Facebook'  => __DIR__ . '/../',
+			'Everzet\Jade' 				  => __DIR__ . '/../Bundles/',
 			'Symfony\Component\Yaml' 	  => __DIR__ . '/../Bundles/',
 			'Application' 				  => __DIR__ . '/../'
 		);
@@ -153,6 +168,7 @@ class Bootstrap
 		 */
 		$this->setupOutglowHttpBase();
 		$this->setupOutglowFacebook();
+		$this->setupEverzetJade();
 		$this->setupSymfonyYaml();
 		$this->setupFuelValidation();
 	}
