@@ -13,7 +13,7 @@
  * @author Harry Lawrence
  * @copyright Outglow Components 2012
  * @package Fluf
- * @version 1.0 BETA
+ * @version 1.1 BETA
  * @license The MIT License (MIT)
 */
 
@@ -109,6 +109,18 @@ class Fluf implements \Outglow\Component\Community\CommunityInterface
 
 		$this->yamlParser = $yamlParser;
 		$this->memcache   = $memcache;
+	}
+
+	/**
+	 * - setMemcache
+	 * SET UP MEMCACHE SO WE CAN
+	 * CACHE ANY YAML FILES IF NEEDED
+	 * @param Object
+	 * @return bool
+	 */
+	public function setMemcache(Memcache $newMemcache)
+	{
+		return $this->memcache = $newMemcache;
 	}
 
 	/**

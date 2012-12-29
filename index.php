@@ -6,7 +6,6 @@
 	require_once('Outglow/Bootstrap.php');
 	require_once('Outglow/Configure.php');
 	require_once('Outglow/Autorouter.php');
-
 	if (file_exists('vendor/autoload.php')) {
 		require_once('vendor/autoload.php');
 	}

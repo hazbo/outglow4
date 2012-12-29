@@ -58,6 +58,11 @@ class Bootstrap
 		});
 	}
 
+	private function setupOutglowFluf()
+	{
+		$this->community->setMemcache($this->community->get('Memcache'));
+	}
+
 	/**
 	 * - setupOutglowHttpBase
 	 * LOADS THE OUTGLOW
@@ -137,6 +142,15 @@ class Bootstrap
 		$this->setupOutglowCommunity();
 		$this->setupOutglowConfiguration($configure);
 		$this->setupOutglowMemcache();
+		$this->setupOutglowFluf();
+
+		/**
+		 * ANYTHING AFTER THIS POINT CAN
+		 * TAKE ADVANTAGE OF YAML
+		 * CONFIGURATION CACHING,
+		 * PROVIDING MEMCACHE IS INSTALLED
+		 * ON THE SERVER
+		 */
 		$this->setupOutglowHttpBase();
 		$this->setupOutglowFacebook();
 		$this->setupSymfonyYaml();
